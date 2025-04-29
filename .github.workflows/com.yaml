@@ -16,6 +16,6 @@ jobs:
         run: pipenv install
         # Run the Python script
       - name: Run Python script
-        run: pipenv run python bot.py
+        run: python bot.py
         env:
           TOKEN: ${{ secrets.TOKEN }}
