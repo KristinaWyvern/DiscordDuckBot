@@ -1,0 +1,21 @@
+name: bot
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install pipenv
+        run: pip install pipenv
+      - name: Install deps
+        run: pipenv install
+        # Run the Python script
+      - name: Run Python script
+        run: pipenv run python main.py
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
