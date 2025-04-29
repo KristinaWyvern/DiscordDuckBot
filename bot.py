@@ -3,7 +3,8 @@ import requests
 import json
 import unicodedata
 import random
-from decouple import config
+from dotenv import load_dotenv
+import os
 
 # Constants
 KEYDUCK = ['gęś','ges', 'kaczka', 'гусь', 'утка', 'goose', 'duck','🦆']
@@ -75,5 +76,6 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 
+load_dotenv()
 client = MyClient(intents=intents)
-client.run(config('TOKEN'))
+client.run(os.getenv('DISCORD_BOT_TOKEN'))
