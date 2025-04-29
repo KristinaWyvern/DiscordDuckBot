@@ -1,4 +1,9 @@
 name: bot
+on:
+  workflow_run:
+    workflows: ["Docker Hub"]
+    types:
+      - completed
 jobs:
   build:
     name: Build
