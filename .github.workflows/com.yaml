@@ -1,19 +1,21 @@
-name: Deployment
-run-name: Deployment
-
-on:
-  workflow_run:
-    workflows: ["Docker Hub"]
-    types:
-      - completed
-
+name: bot
 jobs:
-  deploy:
-    name: Deploy
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-    - name: executing deployment script
-      uses: appleboy/ssh-action@v0.1.10
-      with:
-        TOKEN: ${{ secrets.TOKEN }}
+      - name: Check out this repository
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install pipenv
+        run: pip install pipenv
+      - name: Install deps
+        run: pipenv install
+        # Run the Python script
+      - name: Run Python script
+        run: pipenv run python bot.py
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
