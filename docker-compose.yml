@@ -1,6 +1,6 @@
 version: '3'
 services:
-  jezekbot:
+  DuckBot:
     build: .
     restart: always
     volumes:
