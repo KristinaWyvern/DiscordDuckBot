@@ -12,7 +12,7 @@
 pip install discord requests python-decouple unicodedata
 ```
 
-- Copy and renamed the env to .env
+- Copy and renamed the env-example.txt to .env
 - Edit the .env file to your personal Discord bot token
 - Run the bots
 
