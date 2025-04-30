@@ -1,21 +1,25 @@
-name: bot
+name: discord-bot-deployment  # Workflow name
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch
+
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
+  deploy-discord-bot:
+    runs-on: ubuntu-latest  # Run on Ubuntu
+
     steps:
-      - name: Check out this repository
+      - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          python-version: '3.8'
-      - name: Install pipenv
-        run: pip install pipenv
-      - name: Install deps
-        run: pipenv install
-        # Run the Python script
-      - name: Run Python script
-        run: python bot.py
-        env:
-          TOKEN: ${{ secrets.TOKEN }}
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to Discord
+        run: npm run deploy -- --TOKEN  ${{ secrets.TOKEN }}
