@@ -3,6 +3,7 @@ import requests
 import json
 import unicodedata
 import random
+import asyncio 
 from decouple import config
 
 # Constants
@@ -37,43 +38,59 @@ def get_duck():
     ]
   return random.choice(duck_pictures)
 
-# Main logic
-class MyClient(discord.Client):
-  async def on_ready(self):
-    print('Logged on as {0}!'.format(self.user))
-  
-  async def on_message(self, message):
-    if message.author == self.user:
-      return
+hi_url = "https://tenor.com/view/duck-gif-8931426677329494973"
 
-    # React to keywords
-    normalized_content = remove_diacritics(message.content.lower())
-    if any(word in normalized_content for word in KEYDUCK):
-       duck_url = get_duck()
-       await message.channel.send(duck_url)
+async def react_keyword(massage,keywords, url):
+      normalized_content = remove_diacritics(massage.content.lower())
+      if any(word in normalized_content for word in keywords):
+         urls = url
+         await massage.channel.send(urls)
 
-    if any(word in normalized_content for word in KEYHI):
-       hi_url = "https://tenor.com/view/duck-gif-8931426677329494973"
-       await message.channel.send(hi_url)
+intents = discord.Intents.default()
+intents.message_content = True
+client = discord.Client(intents=intents)
+
+@client.event
+async def on_ready():
+	print(f'{client.user} is up and running!')     
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+      return  
     
-    # Commands
-    if message.content.startswith('~meme'):
-      meme_url = get_meme()
-      await message.channel.send(meme_url)
-      
-    if message.content.startswith('~help'):
-      help_message = (
+    await react_keyword(message,KEYDUCK, get_duck())
+    await react_keyword(message,KEYHI,hi_url)
+
+bot = discord.Bot()
+@bot.event
+async def on_ready():
+	print(f'{bot.user} is up and running!')     
+
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+     return
+    
+    await bot.process_commands(message)
+
+@bot.command()
+async def help(ctx):
+	help_message= (
         "Commands:\n"
-        "~meme - Sends a random meme\n"
-        "~help - Displays this help message\n"
+        "/meme - Sends a random meme\n"
+        "/helps - Displays this help message\n"
         "React to messages containing 'gęś','ges', 'kaczka', 'гусь', 'утка', 'goose', 'duck' or '🦆' with a random duck gif\n"        
         "React to messages containing 'привет','здорово', 'здравствуйте', 'hi', 'hey', 'hello', 'cześć', 'witam', '👋' with a gif\n"
       )
-      await message.channel.send(help_message)
+	await ctx.respond(help_message)
 
-# Run the Bot
-intents = discord.Intents.default()
-intents.message_content = True
+@bot.command()
+async def meme(ctx):
+	meme_url = get_meme()
+	await ctx.respond(meme_url)
 
-client = MyClient(intents=intents)
-client.run(config('TOKEN'))
+loop = asyncio.get_event_loop()
+loop.create_task(client.start(config('TOKEN')))
+loop.create_task(bot.start(config('TOKEN')))
+loop.run_forever()
